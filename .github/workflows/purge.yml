@@ -1,0 +1,18 @@
+name: delete workflows 
+
+on:
+  workflow_dispatch:
+
+jobs:
+  maintenance:
+    name: Maintenance
+    runs-on: ubuntu-latest
+      
+    steps:
+      - name: Delete old workflow runs
+        uses: iamludal/action-purge-workflow-runs@v2
+        with:
+          days-old: 7
+          ignore-open-pull-requests: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

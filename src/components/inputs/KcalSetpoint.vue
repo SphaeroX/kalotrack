@@ -1,0 +1,27 @@
+<template>
+    <v-text-field :label="label" v-model="inputValue" @blur="handleEnter" type="number"></v-text-field>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+import { useMainStore } from '@/stores/mainStore';
+
+const store = useMainStore();
+const inputValue = ref(null);
+const text = "Kalorienvorschlag/Ziel heute :";
+
+// Computed property for the label
+const label = computed(() => `${text} ${store.kcalSuggested}`);
+
+// Function to handle input change
+const handleEnter = () => {
+    if (!inputValue.value) {
+        return;
+    }
+
+    store.updateKcalSuggested(inputValue.value);
+    inputValue.value = null;
+};
+</script>
+
+<style scoped></style>

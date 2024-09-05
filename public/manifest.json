@@ -1,0 +1,18 @@
+{
+    "lang": "de-de",
+    "short_name": "KaloTracker",
+    "name": "KaloTracker Kalorienzähler",
+    "orientation": "portrait",
+    "icons": [
+        { "src": "https://murmli-admin.azurewebsites.net/logo-512.png", "type": "image/png", "sizes": "512x512" }
+    ],
+    "start_url": "https://murmli-admin.azurewebsites.net/",
+    "display": "standalone",
+    "prefer_related_applications": false,
+    "background_color": "#f3ebe1",
+    "id": "de.murmli.kalotracker",
+    "categories": [
+        "health"
+    ],
+    "description": "KI-Kalorienzähler & Diät-Unterstützung mit Trainingsplänen. Optimiere deine Fitness!"
+}
