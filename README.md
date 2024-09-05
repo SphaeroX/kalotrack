@@ -18,3 +18,4 @@ Follow these steps to set up and run the Kalotrack project on your local machine
    npm run dev
 
 This command will launch both the backend server and the Vite frontend development server.
+"# kalotrack" 
