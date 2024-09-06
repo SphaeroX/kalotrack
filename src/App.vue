@@ -16,17 +16,20 @@
 
 <script setup>
 import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import NavBarTop from './layouts/NavBarTop.vue';
 import FooterBar from './layouts/FooterBar.vue';
 // import BottomBar from './layouts/BottomBar.vue';
 import ChangelogNews from './layouts/ChangelogNews.vue';
 
 const router = useRouter();
+const route = useRoute();
 
 onMounted(() => {
   const bodyData = JSON.parse(localStorage.getItem('bodyData'));
-  if (!bodyData) {
+
+  // Check if bodyData is null and current route is not '/calculator'
+  if (!bodyData && route.path !== '/calculator') {
     router.push('/calculator');
   }
 });
