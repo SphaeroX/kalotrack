@@ -9,7 +9,7 @@
       <!-- Bottom Bar -->
       <FooterBar />
       <!-- <BottomBar /> -->
-      <!-- <ChangelogNews /> -->
+      <ChangelogNews />
     </v-main>
   </v-app>
 </template>
@@ -19,7 +19,7 @@
 import NavBarTop from './layouts/NavBarTop.vue'
 import FooterBar from './layouts/FooterBar.vue'
 // import BottomBar from './layouts/BottomBar.vue'
-// import ChangelogNews from './layouts/ChangelogNews.vue'
+import ChangelogNews from './layouts/ChangelogNews.vue'
 </script>
 
 <style scoped>

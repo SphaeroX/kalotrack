@@ -2,14 +2,11 @@
     <v-dialog v-model="dialog" width="full">
         <v-card>
             <v-card-text>
-                <h3>Update 08.11.2023</h3>
+                <h3>Update 06.09.2024</h3>
                 <v-divider class="pb-4"></v-divider>
-                <p>Eingabe durch Foto!</p>
-                <p class="pt-3">Ihr habt jetzt die Möglichkeit ein Bild von eurem Essen zu machen und dies hinzuzufügen
-                    den Button dafür findet ihr Links unten neben Essen hinzufügen</p>
-                <p class="pt-7">Bei Fehlern oder Ideen meldet euch jederzeit per <a
-                        href="mailto:prompt-engineered@protonmail.com">Mail</a>
-                </p>
+                <p class="pb-3">Die App ist opensource, Discord und Github Link sind im Menü</p>
+                <p class="pb-3">Zudem wurde die Hauptseite überarbeitet, die Chatfunktion kommt noch.</p>
+                <p class="pb-3">CSV Export wurde optimiert.</p>
             </v-card-text>
             <v-card-actions>
                 <v-btn color="primary" block @click="closeDialog()">Schließen</v-btn>
@@ -24,8 +21,8 @@
 export default {
     data() {
         return {
-            dialog: false,
-            latestNews: "20240905"
+            dialog: true,
+            latestNews: "20240906"
         }
     },
     created() {
