@@ -6,8 +6,7 @@
             </template>
             <v-btn key="1" icon="mdi-format-text" @click="toggleTextField"></v-btn>
             <v-btn key="2" icon="mdi-microphone" @click="startRecording"></v-btn>
-            <v-btn key="3" icon="mdi-camera" @click="openCamera"></v-btn>
-
+            <v-btn key="3" icon="mdi-camera" @click="openImagePicker"></v-btn>
             <v-btn key="4" icon="mdi-chat" @click="openChatDialog"></v-btn>
         </v-speed-dial>
 
@@ -16,9 +15,6 @@
             append-inner-icon="mdi-send" class="sticky-textfield" placeholder="Texteingabe für Kalotrack"
             @focus="clearInactivityTimer" @blur="startInactivityTimer" @click="exampleInput"
             @click:append-inner="handleEnter" @keydown.enter="handleEnter">
-            <v-overlay v-model="overlay" contained class="align-center justify-center">
-                <v-progress-circular indeterminate size="30"></v-progress-circular>
-            </v-overlay>
         </v-text-field>
 
 
@@ -34,7 +30,9 @@
 
                 <v-card-text class="chat-content">
                     <!-- Chat-Nachrichten anzeigen -->
-                    <div v-for="message in chatMessages" :key="message">{{ message }}</div>
+                    <div v-for="message in chatMessages" :key="message">
+                        <p>{{ message }}</p>
+                    </div>
                 </v-card-text>
 
                 <!-- Chat-Eingabe -->
@@ -66,29 +64,45 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <!--- Loading Dialog -->
+        <v-overlay v-model="overlay" absolute class="d-flex align-center justify-center" z-index="10">
+            <v-progress-circular indeterminate size="50" color="primary"></v-progress-circular>
+        </v-overlay>
+
     </div>
+
+    <!-- Hidden File Input -->
+    <input type="file" ref="fileInput" accept="image/*" @change="handleImageSelect" style="display: none;" />
+
 </template>
 
 <script setup>
 import { ref, nextTick, onMounted } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
+import { useApiStore } from '@/stores/apiStore'; // Api Store für Backend-Verbindung
 
 const store = useMainStore();
+const apiStore = useApiStore();
+
+const recordingDialog = ref(false);
+const mediaRecorder = ref(null);
+const audioChunks = ref([]);
+
+const inputText = ref('');
+const label = ref('Fang an zu tippen...');
+const overlay = ref(false);
 
 let inactivityTimer = null;
 
 // Reactive data
 const showTextField = ref(false);
-const inputText = ref('');
 const chatDialog = ref(false);
-const recordingDialog = ref(false);
 const chatInput = ref('');
-const chatMessages = ref([]);
+const chatMessages = ref(["Hier kann man unter anderem dann Fragen zur seiner Ernährung, Diät etc stellen.", "Folgt bald..."]);
 const inputFieldRef = ref(null);
-const overlay = ref(false);
-const label = ref('Fang an zu tippen...');
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
+const fileInput = ref(null);
 
 // Function to get random example text
 const exampleInput = () => {
@@ -199,45 +213,94 @@ const sendMessage = () => {
     }
 };
 
-// Camera function (Web API)
-const openCamera = () => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                // Handle the stream here
-                console.log("Camera stream started");
-            })
-            .catch(error => {
-                console.error("Camera access denied", error);
-            });
-    } else {
-        alert("Kamera wird nicht unterstützt.");
+// Send Picture
+const sendPicture = () => {
+
+};
+
+// Start Recording Funktion
+const startRecording = async () => {
+    recordingDialog.value = true;
+    audioChunks.value = [];
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder.value = new MediaRecorder(stream);
+
+        mediaRecorder.value.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                audioChunks.value.push(event.data);
+            }
+        };
+
+        mediaRecorder.value.start();
+    } catch (error) {
+        console.error('Fehler beim Starten der Aufnahme:', error);
+        recordingDialog.value = false;
     }
 };
 
-// Voice recording function (Web API)
-const startRecording = () => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-                const mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
-                console.log("Recording started");
+// Aufnahme stoppen und verwerfen
+const discardVoiceInput = () => {
+    if (mediaRecorder.value) {
+        mediaRecorder.value.stop();
+        mediaRecorder.value = null;
+    }
+    audioChunks.value = [];
+    recordingDialog.value = false;
+};
 
-                // Stop and discard the recording
-                const stopRecording = () => {
-                    mediaRecorder.stop();
-                    console.log("Recording stopped");
-                };
+// Aufnahme stoppen und an Backend senden
+const submitVoiceInput = async () => {
+    if (mediaRecorder.value) {
+        mediaRecorder.value.stop();
+        recordingDialog.value = false;
+        overlay.value = true;
 
-                // You can attach this stopRecording to a button or dialog
-                setTimeout(stopRecording, 5000); // Example: Auto-stop after 5 seconds
-            })
-            .catch(error => {
-                console.error("Microphone access denied", error);
-            });
-    } else {
-        alert("Mikrofon wird nicht unterstützt.");
+
+        mediaRecorder.value.onstop = async () => {
+            const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' });
+            const formData = new FormData();
+            formData.append('audio', audioBlob);
+
+            try {
+                const result = await apiStore.voiceToItems(formData);
+                store.addItems(result);
+                audioChunks.value = [];
+                overlay.value = false;
+
+            } catch (error) {
+                alert('Fehler beim Senden der Aufnahme.');
+                console.error('Fehler beim Senden der Aufnahme:', error);
+            }
+        };
+    }
+};
+
+// Function to open image picker
+const openImagePicker = () => {
+    fileInput.value.click();
+};
+
+
+// Handle selected image
+const handleImageSelect = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    overlay.value = true;
+
+    try {
+        const result = await apiStore.imageToItems(formData);
+        store.addItems(result);
+    } catch (error) {
+        console.error('Fehler beim Senden des Bildes:', error);
+        alert('Fehler beim Senden des Bildes.');
+    } finally {
+        overlay.value = false;
     }
 };
 
@@ -274,6 +337,16 @@ onMounted(() => {
 .recording-text {
     animation: fade 1.0s infinite alternate;
 }
+
+.v-overlay--absolute {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999;
+}
+
 
 @keyframes fade {
     from {

@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
-const OpenAI = require("openai");
 
+const OpenAI = require("openai");
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -30,66 +30,83 @@ async function prompt(req, res) {
 }
 
 // Funktion zum Codieren des Bildes in base64
-function encodeImage(imageBytes) {
-  const base64Image = Buffer.from(imageBytes).toString("base64");
-  return base64Image;
-}
-
-async function imageToText(req, res) {
+async function imageToItems(req, res) {
   try {
-    // Die binären Bilddaten aus dem Request extrahieren
+    const openai = new OpenAI();
+
     const imageBytes = req.file.buffer;
-
-    // Deine OpenAI-API-Schlüssel
-    const api_key = global.openaiApiKey;
-
-    // Das Bild in base64 codieren
     const base64Image = encodeImage(imageBytes);
 
-    // API-Anforderung vorbereiten
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${api_key}`,
+    // Funktion zum Erkennen des Bildtyps
+    const getImageType = (buffer) => {
+      const signature = buffer.toString('hex', 0, 4); // Erste 4 Bytes als Hex
+      if (signature.startsWith('ffd8')) return 'jpeg'; // JPEG
+      if (signature.startsWith('8950')) return 'png';  // PNG
+      if (signature.startsWith('4749')) return 'gif';  // GIF
+      return null;
     };
 
-    const payload = {
-      model: "gpt-4-vision-preview",
+    const imageType = getImageType(imageBytes);
+    if (!imageType) {
+      res.status(400).json({ error: 'Unsupported image type' });
+      return;
+    }
+
+    const mimeType = {
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif'
+    }[imageType];
+
+    const imageUrl = `data:${mimeType};base64,${base64Image}`;
+
+    const response = await openai.chat.completions.create({
+      model: global.chatGptModel,
       messages: [
         {
-          role: "user",
-          content: [
+          "role": "system",
+          "content": [
             {
-              type: "text",
-              text: "Gebe mir in einem kurzen Satz wieder was für ein Essen du auf dem Bild siehst und wieviel, zB ein Teller voll mit Salat. Halte dich so kurz wie möglich",
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${base64Image}`,
-              },
-            },
-          ],
+              "type": "text",
+              "text": "Gebe mir in einem kurzen Satz wieder was für ein Essen du auf dem Bild siehst und wieviel, zB ein Teller voll mit Salat oder ein großes Stück Pizza Funghi. Halte dich so kurz wie möglich"
+            }
+          ]
         },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": imageUrl
+              }
+            }
+          ]
+        }
       ],
-      max_tokens: 300,
-    };
-
-    // Anfrage an die OpenAI-API senden
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(payload),
+      temperature: 0,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      response_format: {
+        "type": "text"
+      },
     });
 
-    const responseData = await response.json();
+    const answer = response.choices[0].message.content;
 
-    console.log("OPENAI IMAGE: " + responseData.choices[0].message.content);
-    req.body.prompt = responseData.choices[0].message.content;
+    console.log("OPENAI IMAGE: " + answer);
+    req.body.prompt = answer;
     prompt(req, res);
   } catch (error) {
     console.error("Fehler bei der Anfrage an die OpenAI-API:", error);
     res.status(500).json({ error: "Fehler bei der Anfrage an die OpenAI-API" });
   }
+}
+
+function encodeImage(buffer) {
+  return buffer.toString('base64');
 }
 
 async function ask(req, res) {
@@ -268,7 +285,7 @@ async function createPlan(req, res) {
 }
 
 router.post("/prompt", upload.single("audio"), prompt);
-router.post("/imageToText", upload.single("image"), imageToText);
+router.post("/imageToItems", upload.single("image"), imageToItems);
 router.post("/transcribe", upload.single("audio"), transcribe);
 router.post("/speech/ask", upload.single("audio"), ask);
 router.post("/plans/create", upload.single("audio"), createPlan);
