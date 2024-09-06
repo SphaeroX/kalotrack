@@ -282,14 +282,57 @@ const openImagePicker = () => {
     fileInput.value.click();
 };
 
+// Funktion zur Reduzierung der Bildgröße
+const resizeImage = (file, maxDimension) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            img.src = e.target.result;
+        };
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxDimension) {
+                    height = (height * maxDimension) / width;
+                    width = maxDimension;
+                }
+            } else {
+                if (height > maxDimension) {
+                    width = (width * maxDimension) / height;
+                    height = maxDimension;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            }, file.type);
+        };
+
+        reader.readAsDataURL(file);
+    });
+};
 
 // Handle selected image
 const handleImageSelect = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Bild auf maximale Dimension von 600 Pixel verkleinern
+    const resizedBlob = await resizeImage(file, 600);
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', resizedBlob, file.name);
 
     overlay.value = true;
 
