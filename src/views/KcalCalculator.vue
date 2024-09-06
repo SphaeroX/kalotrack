@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
 import { calculateCalories, calculateDietCalories, calculateNutrientDistribution } from '@/utils/main.js';
 import { useRouter } from 'vue-router';
@@ -202,10 +202,8 @@ const calculate = () => {
 
   const suggesedCalories = calculateDietCalories(totalCalories, dietLevel.value);
   kcalSuggested.value = Math.round(suggesedCalories);
-
   const nutrientSuggestedData = calculateNutrientDistribution(suggesedCalories, diet.value);
   nutrientSuggested.value = nutrientSuggestedData;
-
   store.kcalSuggested = kcalSuggested.value;
   store.nutrientSuggested = nutrientSuggestedData;
 
@@ -235,9 +233,6 @@ const updateBodyData = () => {
   router.push('/');
 };
 
-onMounted(() => {
-  // Initialize form with data from store if needed
-});
 </script>
 
 <style scoped></style>

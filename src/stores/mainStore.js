@@ -139,12 +139,6 @@ export const useMainStore = defineStore('main', {
             }
         },
 
-        getDiet() {
-            const diet = localStorage.getItem('diet');
-            this.diet = diet ? JSON.parse(diet) : false;
-            return this.diet;
-        },
-
         updateBodyData() {
             const totalCalories = calculateCalories(
                 this.bodyData.height,
@@ -160,11 +154,9 @@ export const useMainStore = defineStore('main', {
                 this.bodyData.workIntensity
             );
 
-            this.getDiet();
-            const suggesedCalories = calculateDietCalories(totalCalories, this.diet.level);
+            const suggesedCalories = calculateDietCalories(totalCalories, this.bodyData.workIntensity);
             this.kcalSuggested = Math.round(suggesedCalories);
-
-            const nutrientSuggested = calculateNutrientDistribution(suggesedCalories, this.diet.type);
+            const nutrientSuggested = calculateNutrientDistribution(suggesedCalories, this.bodyData.diet);
             this.nutrientSuggested = nutrientSuggested;
 
             localStorage.setItem('bodyData', JSON.stringify(this.bodyData));
