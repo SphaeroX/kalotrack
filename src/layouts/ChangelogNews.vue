@@ -9,52 +9,33 @@
                 <p class="pb-3">CSV Export wurde optimiert.</p>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="primary" block @click="closeDialog()">Schließen</v-btn>
+                <v-btn color="primary" block @click="closeDialog">Schließen</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 
+const dialog = ref(false);
+const latestNews = '20240906';
 
-export default {
-    data() {
-        return {
-            dialog: true,
-            latestNews: "20240906"
-        }
-    },
-    created() {
-        this.checkNews();
-    },
-    methods: {
-        checkNews() {
-            if (!this.latestNews) { return; }
-            const news = localStorage.getItem("latestNews");
-            if (!news) {
-                this.dialog = true;
-            }
-
-            if (this.latestNews != parseInt(news)) {
-                this.dialog = true;
-            }
-        },
-        closeDialog() {
-            localStorage.setItem("latestNews", this.latestNews);
-            this.dialog = false
-        },
-        currentDate() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, "0");
-            const day = String(today.getDate()).padStart(2, "0");
-            const formattedDate = `${year}${month}${day}`;
-
-            return formattedDate;
-        }
+const checkNews = () => {
+    const news = localStorage.getItem('latestNews');
+    if (!news || latestNews !== parseInt(news)) {
+        dialog.value = true;
     }
-}
+};
+
+const closeDialog = () => {
+    localStorage.setItem('latestNews', latestNews);
+    dialog.value = false;
+};
+
+onMounted(() => {
+    checkNews();
+});
 </script>
 
 <style scoped></style>
