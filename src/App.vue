@@ -14,12 +14,22 @@
   </v-app>
 </template>
 
-
 <script setup>
-import NavBarTop from './layouts/NavBarTop.vue'
-import FooterBar from './layouts/FooterBar.vue'
-// import BottomBar from './layouts/BottomBar.vue'
-import ChangelogNews from './layouts/ChangelogNews.vue'
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import NavBarTop from './layouts/NavBarTop.vue';
+import FooterBar from './layouts/FooterBar.vue';
+// import BottomBar from './layouts/BottomBar.vue';
+import ChangelogNews from './layouts/ChangelogNews.vue';
+
+const router = useRouter();
+
+onMounted(() => {
+  const bodyData = JSON.parse(localStorage.getItem('bodyData'));
+  if (!bodyData) {
+    router.push('/calculator');
+  }
+});
 </script>
 
 <style scoped>

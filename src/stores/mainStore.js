@@ -135,7 +135,7 @@ export const useMainStore = defineStore('main', {
             if (bodyData) {
                 this.bodyData = bodyData;
             } else {
-                this.$router.push('/calculator');
+                return false;
             }
         },
 
