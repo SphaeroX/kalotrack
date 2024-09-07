@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "off",
+    "editor.tabSize": 2, // Anzahl der Leerzeichen für Tabs
+    "editor.insertSpaces": true, // Verwende Leerzeichen statt Tabs
+    "editor.trimAutoWhitespace": true, // Entfernt automatischen Leerraum am Ende der Zeile
+    "files.trimTrailingWhitespace": true, // Entfernt Leerzeichen am Ende von Zeilen
+    "files.insertFinalNewline": true // Fügt eine leere Zeile am Ende von Dateien hinzu
+}
