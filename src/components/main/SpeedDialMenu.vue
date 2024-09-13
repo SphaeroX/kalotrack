@@ -4,18 +4,16 @@
             <template v-slot:activator="{ props: activatorProps }">
                 <v-fab v-bind="activatorProps" size="large" icon="mdi-plus"></v-fab>
             </template>
-            <v-btn key="1" icon="mdi-format-text" @click="toggleTextField"></v-btn>
             <v-btn key="2" icon="mdi-microphone" @click="startRecording"></v-btn>
             <v-btn key="3" icon="mdi-camera" @click="openImagePicker"></v-btn>
             <v-btn key="4" icon="mdi-chat" @click="openChatDialog"></v-btn>
         </v-speed-dial>
 
         <!-- Sticky-Textfeld  -->
-        <v-text-field v-if="showTextField" v-model="inputText" ref="inputFieldRef" :label="label"
-            append-inner-icon="mdi-send" class="sticky-textfield" placeholder="Texteingabe für Kalotrack"
-            @focus="clearInactivityTimer" @blur="startInactivityTimer" @click="exampleInput"
-            @click:append-inner="handleEnter" @keydown.enter="handleEnter">
-        </v-text-field>
+        <v-card class="sticky-textfield pa-2">
+            <v-text-field v-if="showTextField" v-model="inputText" ref="inputFieldRef" :label="label" append-inner-icon="mdi-send" placeholder="Texteingabe für Kalotrack" @click="exampleInput" @click:append-inner="handleEnter" @keydown.enter="handleEnter">
+            </v-text-field>
+        </v-card>
 
 
         <!-- Chat-Dialog -->
@@ -37,8 +35,7 @@
 
                 <!-- Chat-Eingabe -->
                 <v-card-actions>
-                    <v-text-field v-model="chatInput" placeholder="Schreiben Sie eine Nachricht"
-                        @keyup.enter="sendMessage"></v-text-field>
+                    <v-text-field v-model="chatInput" placeholder="Schreiben Sie eine Nachricht" @keyup.enter="sendMessage"></v-text-field>
                     <v-btn @click="sendMessage">Senden</v-btn>
                 </v-card-actions>
             </v-card>
@@ -93,10 +90,8 @@ const inputText = ref('');
 const label = ref('Fang an zu tippen...');
 const overlay = ref(false);
 
-let inactivityTimer = null;
-
 // Reactive data
-const showTextField = ref(false);
+const showTextField = ref(true);
 const chatDialog = ref(false);
 const chatInput = ref('');
 const chatMessages = ref(["Hier kann man unter anderem dann Fragen zur seiner Ernährung, Diät etc stellen.", "Folgt bald..."]);
@@ -179,24 +174,6 @@ const toggleTextField = () => {
         nextTick(() => {
             inputFieldRef.value.focus();  // Fokus auf das Textfeld setzen
         });
-        startInactivityTimer();
-    } else {
-        clearInactivityTimer();
-    }
-};
-
-// Start inactivity timer
-const startInactivityTimer = () => {
-    clearInactivityTimer();
-    inactivityTimer = setTimeout(() => {
-        showTextField.value = false;
-    }, 5000);
-};
-
-// Clear inactivity timer
-const clearInactivityTimer = () => {
-    if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
     }
 };
 
@@ -211,11 +188,6 @@ const sendMessage = () => {
         chatMessages.value.push(chatInput.value);
         chatInput.value = '';
     }
-};
-
-// Send Picture
-const sendPicture = () => {
-
 };
 
 // Start Recording Funktion
@@ -355,7 +327,7 @@ onMounted(() => {
 <style scoped>
 .floating-speed-dial {
     position: fixed;
-    bottom: 60px;
+    bottom: 75px;
     right: 60px;
     width: 100%;
     height: 60px;
@@ -367,7 +339,7 @@ onMounted(() => {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: 70px;
     background-color: white;
 }
 
