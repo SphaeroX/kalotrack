@@ -1,6 +1,5 @@
 <template>
-    <v-text-field :label="label" v-model="inputValue" @click="exampleInput" append-inner-icon="mdi-send"
-        @click:append-inner="handleEnter" @keydown.enter="handleEnter" type="text">
+    <v-text-field :label="label" v-model="inputValue" @click="exampleInput" append-inner-icon="mdi-send" @click:append-inner="handleEnter" @keydown.enter="handleEnter" type="text">
         <v-overlay v-model="overlay" contained class="align-center justify-center">
             <v-progress-circular indeterminate size="30"></v-progress-circular>
         </v-overlay>

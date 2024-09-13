@@ -10,10 +10,10 @@
         </v-speed-dial>
 
         <!-- Sticky-Textfeld  -->
-        <v-card class="sticky-textfield pa-2">
+        <!-- <v-card class="sticky-textfield pa-2">
             <v-text-field v-if="showTextField" v-model="inputText" ref="inputFieldRef" :label="label" append-inner-icon="mdi-send" placeholder="Texteingabe für Kalotrack" @click="exampleInput" @click:append-inner="handleEnter" @keydown.enter="handleEnter">
             </v-text-field>
-        </v-card>
+        </v-card> -->
 
 
         <!-- Chat-Dialog -->

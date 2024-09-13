@@ -9,14 +9,13 @@
             Kalotrack Apps:
         </p>
         <p>
-            <a href="https://play.google.com/store/apps/details?id=de.murmli.kalotrack"><v-icon size="40"
-                    color="grey-lighten-2" icon="mdi-google-play"></v-icon></a>
+            <a href="https://play.google.com/store/apps/details?id=de.murmli.kalotrack"><v-icon size="40" color="grey-lighten-2" icon="mdi-google-play"></v-icon></a>
 
             <a href="#"><v-icon size="40" color="grey-lighten-2" icon="mdi-microsoft"></v-icon></a>
         </p>
     </div>
 </template>
-  
+
 <script>
 export default {
     data: () => ({
@@ -36,7 +35,7 @@ export default {
 .footer {
     bottom: 0px;
     width: 100%;
-    margin-top: 40px;
+    margin-top: 150px;
     padding: 40px;
     padding-bottom: 80px;
     position: static;

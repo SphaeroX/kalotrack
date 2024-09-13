@@ -1,5 +1,7 @@
 <template>
-    <v-btn @click="downloadCSV">Archive CSV</v-btn>
+    <v-container class="downloadbtn d-flex justify-center">
+        <v-btn @click="downloadCSV">Download Archive (CSV)</v-btn>
+    </v-container>
 </template>
 
 <script setup>
@@ -39,4 +41,9 @@ const convertArrayToCSV = (array) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.downloadbtn {
+    width: 310px;
+    padding: 0
+}
+</style>

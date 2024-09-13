@@ -15,7 +15,7 @@
         </v-row>
     </v-container>
 </template>
-  
+
 <style scoped>
 .spacer {
     padding-top: 69px;

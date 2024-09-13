@@ -9,6 +9,9 @@
   <!-- FoodCards  -->
   <FoodCards />
 
+  <!-- Text / Prompt Input  -->
+  <PromptInput />
+
   <!-- Nutritional Summary  -->
   <v-container>
     <v-row>
@@ -54,7 +57,7 @@
 
 <script setup>
 import FoodCards from '@/components/FoodCards.vue';
-// import ImageInput from '@/components/buttons/ImageInput.vue';
+import PromptInput from '@/components/inputs/PromptInput.vue';
 import DownloadArchive from '@/components/buttons/DownloadArchive.vue';
 import KcalSetpoint from '@/components/inputs/KcalSetpoint.vue';
 import WeightSetpoint from '@/components/inputs/WeightSetpoint.vue';
@@ -67,16 +70,6 @@ import { useMainStore } from '@/stores/mainStore';
 const store = useMainStore();
 
 store.initialize();
-
-const addItem = (items) => store.addItem(items);
-const setItems = (items) => store.setItems(items);
-const updateItems = (items) => store.updateItems(items);
-const deleteItem = (index) => store.deleteItem(index);
-const updateKcalSuggested = (kcal) => store.updateKcalSuggested(kcal);
-const updateWeight = (weight) => store.updateWeight(weight);
-const showDialog = (text) => store.showDialog(text);
-
-const { items, dailyItems, kcalSuggested, bodyData, archive, dialogText, dialog } = store.$state;
 </script>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <template>
-    <v-progress-linear striped :color="progressColor" :value="kcalTotalPercent" height="25">
+    <v-progress-linear :color="progressColor" :value="kcalTotalPercent" :model-value="kcalTotalPercent" height="25">
         <strong>{{ kcalSuggested - kcalTotal }} verbleibend von {{ kcalSuggested }}</strong>
     </v-progress-linear>
 </template>

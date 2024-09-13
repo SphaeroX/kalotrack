@@ -1,5 +1,7 @@
 <template>
-    <v-text-field :label="label" v-model="inputValue" @blur="handleEnter" type="number" />
+    <v-container class="weightSetpoint">
+        <v-text-field :label="label" v-model="inputValue" @blur="handleEnter" type="number" />
+    </v-container>
 </template>
 
 <script setup>
@@ -26,4 +28,9 @@ watch(() => store.weight, (newWeight) => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.weightSetpoint {
+    width: 310px;
+    padding: 0
+}
+</style>
