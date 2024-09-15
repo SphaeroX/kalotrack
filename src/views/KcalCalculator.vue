@@ -1,44 +1,31 @@
 <template>
   <v-card class="mx-auto" title="Kalorienbedarf ermitteln">
     <v-container>
-      <v-text-field v-model="height" ref="heightField" color="primary" label="* Größe (cm)" variant="underlined"
-        required></v-text-field>
+      <v-text-field v-model="height" ref="heightField" color="primary" label="* Größe (cm)" variant="underlined" required></v-text-field>
 
-      <v-text-field v-model="weight" ref="weightField" color="primary" label="* Gewicht (kg)"
-        variant="underlined"></v-text-field>
+      <v-text-field v-model="weight" ref="weightField" color="primary" label="* Gewicht (kg)" variant="underlined"></v-text-field>
 
-      <v-text-field v-model="age" ref="ageField" color="primary" label="* Alter (jahre)"
-        variant="underlined"></v-text-field>
+      <v-text-field v-model="age" ref="ageField" color="primary" label="* Alter (jahre)" variant="underlined"></v-text-field>
 
-      <v-select v-model="gender" color="primary" label="Geschlecht" variant="underlined"
-        :items="genderOptions"></v-select>
+      <v-select v-model="gender" color="primary" label="Geschlecht" variant="underlined" :items="genderOptions"></v-select>
 
-      <v-select v-model="bodyFatLevel" color="primary" label="Body Fat Level" variant="underlined"
-        :items="bodyFatOptions"></v-select>
+      <v-select v-model="bodyFatLevel" color="primary" label="Body Fat Level" variant="underlined" :items="bodyFatOptions"></v-select>
 
-      <v-text-field v-model="weeklyExerciseHours" color="primary" label="Wöchentliche Sportstunden"
-        variant="underlined"></v-text-field>
+      <v-text-field v-model="weeklyExerciseHours" color="primary" label="Wöchentliche Sportstunden" variant="underlined"></v-text-field>
 
-      <v-select v-model="exerciseIntensity" color="primary" label="Intensitätlevel der Sportstunden"
-        variant="underlined" :items="intensityOptions"></v-select>
+      <v-select v-model="exerciseIntensity" color="primary" label="Intensitätlevel der Sportstunden" variant="underlined" :items="intensityOptions"></v-select>
 
-      <v-select v-model="stressLevel" color="primary" label="Stress Level" variant="underlined"
-        :items="stressOptions"></v-select>
+      <v-select v-model="stressLevel" color="primary" label="Stress Level" variant="underlined" :items="stressOptions"></v-select>
 
-      <v-text-field v-model="sleepHours" color="primary" label="Durschnittlicher Schlaf in Stunden"
-        variant="underlined"></v-text-field>
+      <v-text-field v-model="sleepHours" color="primary" label="Durschnittlicher Schlaf in Stunden" variant="underlined"></v-text-field>
 
-      <v-text-field v-model="workHours" color="primary" label="Arbeitsstunden pro Woche"
-        variant="underlined"></v-text-field>
+      <v-text-field v-model="workHours" color="primary" label="Arbeitsstunden pro Woche" variant="underlined"></v-text-field>
 
-      <v-select v-model="workIntensity" color="primary" label="Arbeitsintensität" variant="underlined"
-        :items="workIntensityOptions"></v-select>
+      <v-select v-model="workIntensity" color="primary" label="Arbeitsintensität" variant="underlined" :items="workIntensityOptions"></v-select>
 
-      <v-select v-model="dietLevel" color="primary" label="Dein Ziel" variant="underlined"
-        :items="dietLevelOptions"></v-select>
+      <v-select v-model="dietLevel" color="primary" label="Dein Ziel" variant="underlined" :items="dietLevelOptions" @update:model-value="logSelection('Ziel', $event)"></v-select>
 
-      <v-select v-model="diet" color="primary" label="Ernährungsform" variant="underlined"
-        :items="dietOptions"></v-select>
+      <v-select v-model="diet" color="primary" label="Ernährungsform" variant="underlined" :items="dietOptions"></v-select>
     </v-container>
 
     <v-divider></v-divider>
@@ -112,6 +99,11 @@ const diet = ref(store.bodyData?.diet || 2);
 const dialog = ref(false);
 const kcalSuggested = ref(store.kcalSuggested);
 const nutrientSuggested = ref(store.nutrientSuggested);
+
+const logSelection = (field, value) => {
+  console.log(`${field} ausgewählt:`, value);
+};
+
 
 const genderOptions = [
   { title: 'männlich', value: 'male' },
@@ -226,6 +218,8 @@ const updateBodyData = () => {
     dietLevel: dietLevel.value,
     diet: diet.value,
   };
+
+  store.kcalSuggested = kcalSuggested.value;
 
   store.updateBodyData();
   dialog.value = false;
