@@ -60,6 +60,8 @@ async function imageToItems(req, res) {
 
     const imageUrl = `data:${mimeType};base64,${base64Image}`;
 
+    const prompt = prompts.imageToText();
+
     const response = await openai.chat.completions.create({
       model: global.chatGptModel,
       messages: [
@@ -68,7 +70,7 @@ async function imageToItems(req, res) {
           content: [
             {
               type: "text",
-              text: "Gebe mir in einem kurzen Satz wieder was für ein Essen du auf dem Bild siehst und wieviel, zB ein Teller voll mit Salat oder ein großes Stück Pizza Funghi. Halte dich so kurz wie möglich. Falls es ein Bild von Nährwertangaben ist, dann schreibe es wie folgt mit den richtigen Daten: 100g von xx mit xx Kalorien, xx fett, xx Protein und xx Carbs. Wenn du darauf ein Nudel/Reis etc Gericht siehst, dann sind die Nudeln vermutlich gekocht, deshalb gebe dann Nudeln gekocht zurück, also mit Zusatz",
+              text: prompt,
             },
           ],
         },
