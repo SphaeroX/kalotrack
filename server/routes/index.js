@@ -39,23 +39,23 @@ async function imageToItems(req, res) {
 
     // Funktion zum Erkennen des Bildtyps
     const getImageType = (buffer) => {
-      const signature = buffer.toString('hex', 0, 4); // Erste 4 Bytes als Hex
-      if (signature.startsWith('ffd8')) return 'jpeg'; // JPEG
-      if (signature.startsWith('8950')) return 'png';  // PNG
-      if (signature.startsWith('4749')) return 'gif';  // GIF
+      const signature = buffer.toString("hex", 0, 4); // Erste 4 Bytes als Hex
+      if (signature.startsWith("ffd8")) return "jpeg"; // JPEG
+      if (signature.startsWith("8950")) return "png"; // PNG
+      if (signature.startsWith("4749")) return "gif"; // GIF
       return null;
     };
 
     const imageType = getImageType(imageBytes);
     if (!imageType) {
-      res.status(400).json({ error: 'Unsupported image type' });
+      res.status(400).json({ error: "Unsupported image type" });
       return;
     }
 
     const mimeType = {
-      jpeg: 'image/jpeg',
-      png: 'image/png',
-      gif: 'image/gif'
+      jpeg: "image/jpeg",
+      png: "image/png",
+      gif: "image/gif",
     }[imageType];
 
     const imageUrl = `data:${mimeType};base64,${base64Image}`;
@@ -64,25 +64,25 @@ async function imageToItems(req, res) {
       model: global.chatGptModel,
       messages: [
         {
-          "role": "system",
-          "content": [
+          role: "system",
+          content: [
             {
-              "type": "text",
-              "text": "Gebe mir in einem kurzen Satz wieder was für ein Essen du auf dem Bild siehst und wieviel, zB ein Teller voll mit Salat oder ein großes Stück Pizza Funghi. Halte dich so kurz wie möglich. Falls es ein Bild von Nährwertangaben ist, dann schreibe es wie folgt mit den richtigen Daten: 100g von xx mit xx Kalorien, xx fett, xx Protein und xx Carbs. "
-            }
-          ]
+              type: "text",
+              text: "Gebe mir in einem kurzen Satz wieder was für ein Essen du auf dem Bild siehst und wieviel, zB ein Teller voll mit Salat oder ein großes Stück Pizza Funghi. Halte dich so kurz wie möglich. Falls es ein Bild von Nährwertangaben ist, dann schreibe es wie folgt mit den richtigen Daten: 100g von xx mit xx Kalorien, xx fett, xx Protein und xx Carbs. Wenn du darauf ein Nudel/Reis etc Gericht siehst, dann sind die Nudeln vermutlich gekocht, deshalb gebe dann Nudeln gekocht zurück, also mit Zusatz",
+            },
+          ],
         },
         {
-          "role": "user",
-          "content": [
+          role: "user",
+          content: [
             {
-              "type": "image_url",
-              "image_url": {
-                "url": imageUrl
-              }
-            }
-          ]
-        }
+              type: "image_url",
+              image_url: {
+                url: imageUrl,
+              },
+            },
+          ],
+        },
       ],
       temperature: 0,
       max_tokens: 256,
@@ -90,7 +90,7 @@ async function imageToItems(req, res) {
       frequency_penalty: 0,
       presence_penalty: 0,
       response_format: {
-        "type": "text"
+        type: "text",
       },
     });
 
@@ -106,7 +106,7 @@ async function imageToItems(req, res) {
 }
 
 function encodeImage(buffer) {
-  return buffer.toString('base64');
+  return buffer.toString("base64");
 }
 
 async function ask(req, res) {
@@ -170,7 +170,7 @@ async function speechToText(audioBuffer) {
           Authorization: `Bearer ${global.openaiApiKey}`,
         },
         body: formData,
-      },
+      }
     );
 
     const data = await response.json();
@@ -188,7 +188,7 @@ async function askChatGPT(prompt, role = false, temperature = 1) {
   const openai = new OpenAI();
   const requestBody = {
     model: global.chatGptModel,
-    response_format: { "type": "json_object" },
+    response_format: { type: "json_object" },
     messages: [
       {
         role: "user",
@@ -241,7 +241,7 @@ async function createPlan(req, res) {
     type = "gym";
     gym = `
     Schaue bei den Gym Übungen darauf das in einem Plan nur eine spezifische Gruppe trainiert wird.
-    Zulässige Gruppen sind: 
+    Zulässige Gruppen sind:
     Trizeps und Brust, Bizeps und rücken, Bauch und Beine, Schulter vorne und hinten, Beine vorne und hinten.
     `;
   }
@@ -270,7 +270,7 @@ async function createPlan(req, res) {
     req.body.duration,
     exercisesAmount,
     additional,
-    gym,
+    gym
   );
 
   console.log(prompt);
