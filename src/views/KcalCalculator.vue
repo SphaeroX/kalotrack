@@ -17,9 +17,10 @@
 
       <v-select v-model="dietLevel" color="primary" label="Diätziel" variant="underlined" :items="dietLevelOptions"></v-select>
 
+      <v-text-field v-model="customDietLevel" color="primary" label="Benutzerdefiniertes Diätziel (%)" variant="underlined" type="number"></v-text-field>
+
       <v-select v-model="dietType" color="primary" label="Diätart" variant="underlined" :items="dietTypeOptions"></v-select>
 
-      <v-text-field v-model="customDietLevel" color="primary" label="Benutzerdefiniertes Diätziel (%)" variant="underlined" type="number"></v-text-field>
 
     </v-container>
 
@@ -76,7 +77,7 @@ const weight = ref(store.bodyData?.weight || '');
 const age = ref(store.bodyData?.age || '');
 const gender = ref(store.bodyData?.gender || 'male');
 const workHours = ref(store.bodyData?.workHours || 0);
-const workIntensity = ref(store.bodyData?.workIntensity || '');
+const workIntensity = ref(store.bodyData?.workIntensity || 1.2);
 const manualPAL = ref(store.bodyData?.manualPAL || "");
 const dietLevel = ref(store.bodyData?.dietLevel || 0);
 const dietType = ref(store.bodyData?.dietType || "balanced");
