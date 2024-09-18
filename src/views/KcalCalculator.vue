@@ -215,8 +215,6 @@ const updateBodyData = () => {
     customDietLevel: customDietLevel.value,
   };
 
-  console.log('nutrientSuggested.value', nutrientSuggested.value);
-
   store.kcalSuggested = kcalPerDay.value;
   store.nutrientSuggested = nutrientSuggested.value;
   store.updateBodyData();
