@@ -1,12 +1,7 @@
 // src/stores/mainStore.js
 
 import { defineStore } from "pinia";
-import {
-  getCurrentDate,
-  calculateCalories,
-  calculateDietCalories,
-  calculateNutrientDistribution,
-} from "@/utils/main.js";
+import { getCurrentDate } from "@/utils/main.js";
 
 export const useMainStore = defineStore("main", {
   state: () => ({
@@ -149,31 +144,6 @@ export const useMainStore = defineStore("main", {
     },
 
     updateBodyData() {
-      const totalCalories = calculateCalories(
-        this.bodyData.height,
-        this.bodyData.weight,
-        this.bodyData.age,
-        this.bodyData.gender,
-        this.bodyData.bodyFatLevel,
-        this.bodyData.weeklyExerciseHours,
-        this.bodyData.exerciseIntensity,
-        this.bodyData.stressLevel,
-        this.bodyData.sleepHours,
-        this.bodyData.workHours,
-        this.bodyData.workIntensity
-      );
-
-      const suggesedCalories = calculateDietCalories(
-        totalCalories,
-        this.bodyData.dietLevel
-      );
-      this.kcalSuggested = Math.round(suggesedCalories);
-      const nutrientSuggested = calculateNutrientDistribution(
-        suggesedCalories,
-        this.bodyData.diet
-      );
-      this.nutrientSuggested = nutrientSuggested;
-
       localStorage.setItem("bodyData", JSON.stringify(this.bodyData));
       localStorage.setItem("kcalSuggested", JSON.stringify(this.kcalSuggested));
       localStorage.setItem(

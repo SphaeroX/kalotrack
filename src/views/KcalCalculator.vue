@@ -1,31 +1,26 @@
 <template>
   <v-card class="mx-auto" title="Kalorienbedarf ermitteln">
     <v-container>
-      <v-text-field v-model="height" ref="heightField" color="primary" label="* Größe (cm)" variant="underlined" required></v-text-field>
+      <v-text-field v-model="height" color="primary" label="* Größe (cm)" variant="underlined" required></v-text-field>
 
-      <v-text-field v-model="weight" ref="weightField" color="primary" label="* Gewicht (kg)" variant="underlined"></v-text-field>
+      <v-text-field v-model="weight" color="primary" label="* Gewicht (kg)" variant="underlined"></v-text-field>
 
-      <v-text-field v-model="age" ref="ageField" color="primary" label="* Alter (jahre)" variant="underlined"></v-text-field>
+      <v-text-field v-model="age" color="primary" label="* Alter (Jahre)" variant="underlined"></v-text-field>
 
       <v-select v-model="gender" color="primary" label="Geschlecht" variant="underlined" :items="genderOptions"></v-select>
 
-      <v-select v-model="bodyFatLevel" color="primary" label="Body Fat Level" variant="underlined" :items="bodyFatOptions"></v-select>
-
-      <v-text-field v-model="weeklyExerciseHours" color="primary" label="Wöchentliche Sportstunden" variant="underlined"></v-text-field>
-
-      <v-select v-model="exerciseIntensity" color="primary" label="Intensitätlevel der Sportstunden" variant="underlined" :items="intensityOptions"></v-select>
-
-      <v-select v-model="stressLevel" color="primary" label="Stress Level" variant="underlined" :items="stressOptions"></v-select>
-
-      <v-text-field v-model="sleepHours" color="primary" label="Durschnittlicher Schlaf in Stunden" variant="underlined"></v-text-field>
-
       <v-text-field v-model="workHours" color="primary" label="Arbeitsstunden pro Woche" variant="underlined"></v-text-field>
 
-      <v-select v-model="workIntensity" color="primary" label="Arbeitsintensität" variant="underlined" :items="workIntensityOptions"></v-select>
+      <v-select v-model="workIntensity" color="primary" label="Beruf" variant="underlined" :items="workIntensityOptions"></v-select>
 
-      <v-select v-model="dietLevel" color="primary" label="Dein Ziel" variant="underlined" :items="dietLevelOptions" @update:model-value="logSelection('Ziel', $event)"></v-select>
+      <v-text-field v-model="manualPAL" color="primary" label="Manueller PAL-Wert (optional)" variant="underlined"></v-text-field>
 
-      <v-select v-model="diet" color="primary" label="Ernährungsform" variant="underlined" :items="dietOptions"></v-select>
+      <v-select v-model="dietLevel" color="primary" label="Diätziel" variant="underlined" :items="dietLevelOptions"></v-select>
+
+      <v-select v-model="dietType" color="primary" label="Diätart" variant="underlined" :items="dietTypeOptions"></v-select>
+
+      <v-text-field v-model="customDietLevel" color="primary" label="Benutzerdefiniertes Diätziel (%)" variant="underlined" type="number"></v-text-field>
+
     </v-container>
 
     <v-divider></v-divider>
@@ -33,48 +28,42 @@
     <v-card-actions>
       <v-spacer></v-spacer>
 
-      <v-btn @click="calculate" color="success">
+      <v-btn @click="calculate" class="mb-5" color="success">
         Berechnen
 
         <v-icon icon="mdi-chevron-right" end></v-icon>
       </v-btn>
     </v-card-actions>
-  </v-card>
 
-  <v-row justify="center">
-    <v-dialog v-model="dialog" persistent width="auto">
-      <v-card>
-        <v-card-title class="text-h5">
-          Kalorienvorschlag
-        </v-card-title>
-        <v-card-text>
-          <p>
-            Vorschlag: <strong>{{ kcalSuggested }} kCal</strong>
-          </p>
-          <p>
-            Fett({{ nutrientSuggested.fat }}g),
-            Kohlenhydrate({{ nutrientSuggested.carbs }}g),
-            Protein({{ nutrientSuggested.protein }}g)
-          </p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red-darken-1" variant="text" @click="dialog = false">
-            Nein
-          </v-btn>
-          <v-btn color="green-darken-1" variant="text" @click="updateBodyData">
-            Ja
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+    <v-row justify="center">
+      <v-dialog v-model="dialog" persistent width="auto">
+        <v-card>
+          <v-card-title class="text-h5">Vorschlag</v-card-title>
+          <v-card-text>
+            <p>Durchschnittlicher Tagesbedarf: <strong>{{ kcalPerDay }} kCal</strong></p>
+            <p>
+              Fett({{ nutrientSuggested.fat }}g),
+              Kohlenhydrate({{ nutrientSuggested.carbs }}g),
+              Protein({{ nutrientSuggested.protein }}g)
+            </p>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="red-darken-1" variant="text" @click="dialog = false">
+              Verwerfen
+            </v-btn>
+            <v-btn color="green-darken-1" variant="text" @click="updateBodyData">
+              Übernehmen
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
+  </v-card>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 import { useMainStore } from '@/stores/mainStore';
-import { calculateCalories, calculateDietCalories, calculateNutrientDistribution } from '@/utils/main.js';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -82,125 +71,134 @@ const router = useRouter();
 const store = useMainStore();
 store.initialize();
 
-
 const height = ref(store.bodyData?.height || '');
 const weight = ref(store.bodyData?.weight || '');
 const age = ref(store.bodyData?.age || '');
 const gender = ref(store.bodyData?.gender || 'male');
-const bodyFatLevel = ref(store.bodyData?.bodyFatLevel || 3);
-const weeklyExerciseHours = ref(store.bodyData?.weeklyExerciseHours || '');
-const exerciseIntensity = ref(store.bodyData?.exerciseIntensity || '');
-const stressLevel = ref(store.bodyData?.stressLevel || 3);
-const sleepHours = ref(store.bodyData?.sleepHours || '');
-const workHours = ref(store.bodyData?.workHours || '');
+const workHours = ref(store.bodyData?.workHours || 0);
 const workIntensity = ref(store.bodyData?.workIntensity || '');
-const dietLevel = ref(store.bodyData?.dietLevel || 3);
-const diet = ref(store.bodyData?.diet || 2);
-const dialog = ref(false);
-const kcalSuggested = ref(store.kcalSuggested);
+const manualPAL = ref(store.bodyData?.manualPAL || "");
+const dietLevel = ref(store.bodyData?.dietLevel || 0);
+const dietType = ref(store.bodyData?.dietType || "balanced");
+const customDietLevel = ref(store.bodyData?.customDietLevel || '');
 const nutrientSuggested = ref(store.nutrientSuggested);
+const kcalPerDay = ref(store.kcalSuggested?.customDietLevel || 0);
 
-const logSelection = (field, value) => {
-  console.log(`${field} ausgewählt:`, value);
-};
+const dialog = ref(false);
+const dietLevelOptions = [
+  { title: 'Stark abnehmen (-25%)', value: -25 },
+  { title: 'Etwas abnehmen (-15%)', value: -15 },
+  { title: 'Halten', value: 0 },
+  { title: 'Leichter Aufbau (+10%)', value: 10 },
+  { title: 'Starker Aufbau (+15%)', value: 15 },
+];
 
-
+const dietTypeOptions = [
+  { title: 'Wenig Kohlenhydrate', value: "lowCarb" },
+  { title: 'Ausgewogen', value: "balanced" },
+  { title: 'Wenig Fett', value: "lowFat" },
+];
 const genderOptions = [
-  { title: 'männlich', value: 'male' },
-  { title: 'weiblich', value: 'female' },
-];
-
-const bodyFatOptions = [
-  { title: 'Schwere Fettzunahme', value: 1 },
-  { title: 'Erschwerte Fettzunahme', value: 2 },
-  { title: 'Normale Fettzunahme', value: 3 },
-  { title: 'Erhöhte Fettzunahme', value: 4 },
-  { title: 'Schnelle Fettzunahme', value: 5 },
-];
-
-const intensityOptions = [
-  { title: 'Sehr Leicht', value: 1 },
-  { title: 'Leicht', value: 2 },
-  { title: 'Neutral', value: 3 },
-  { title: 'Hoch', value: 4 },
-  { title: 'Sehr Hoch', value: 5 },
-];
-
-const stressOptions = [
-  { title: 'Sehr Leicht', value: 1 },
-  { title: 'Leicht', value: 2 },
-  { title: 'Neutral', value: 3 },
-  { title: 'Hoch', value: 4 },
-  { title: 'Sehr Hoch', value: 5 },
+  { title: "Männlich", value: "male" },
+  { title: "Weiblich", value: "female" },
 ];
 
 const workIntensityOptions = [
-  { title: 'Nur sitzend', value: 1 },
-  { title: 'Sitzend und stehend', value: 2 },
-  { title: 'Stehend, leichte Bewegung', value: 3 },
-  { title: 'Stehend mit Tätigkeiten', value: 4 },
-  { title: 'Schwere Arbeit', value: 5 },
+  { title: "Home-Office (1.2 PAL) – sitzend, keine körperliche Aktivität", value: 1.2 },
+  { title: "Büroangestellter (1.3 PAL) – sitzend, geringe Bewegung", value: 1.3 },
+  { title: "Lehrer (1.4 PAL) – moderates Gehen, Stehen", value: 1.4 },
+  { title: "Verkäufer (1.5 PAL) – stehend, gehend, leichte körperliche Arbeit", value: 1.5 },
+  { title: "Kellner (1.6 PAL) – viel Gehen, Tragen von Tellern", value: 1.6 },
+  { title: "Pflegekraft (1.7 PAL) – häufiges Gehen, Heben von Patienten", value: 1.7 },
+  { title: "Bauarbeiter (1.8 PAL) – körperlich anstrengend, Heben, Tragen", value: 1.8 },
+  { title: "Landwirt (1.9 PAL) – körperliche Arbeit, Heben, Maschinenbedienung", value: 1.9 },
+  { title: "Sportlehrer (2.0 PAL) – aktiv, Vormachen von Übungen", value: 2.0 },
+  { title: "Baustelle (2.2 PAL) – schwere körperliche Arbeit, Heben, Stehen", value: 2.2 },
+  { title: "Bergführer (2.4 PAL) – extreme Aktivität, langes Gehen im Gelände", value: 2.4 },
 ];
 
-const dietLevelOptions = [
-  { title: 'Stark abnehmen (-25%)', value: 1 },
-  { title: 'Etwas abnehmen (-15%)', value: 2 },
-  { title: 'Halten', value: 3 },
-  { title: 'Leichter Aufbau (+10%)', value: 4 },
-  { title: 'Starker Aufbau (+15%)', value: 5 },
-];
+const calculateWeightedPAL = (workHours, workPAL) => {
+  if (!workHours || workHours <= 0) {
+    return 0; // Wenn keine Arbeitsstunden angegeben sind, verwenden wir direkt den workPAL
+  }
 
-const dietOptions = [
-  { title: 'Wenig Kohlenhydrate', value: 1 },
-  { title: 'Ausgewogen', value: 2 },
-  { title: 'Wenig Fett', value: 3 },
-];
+  const workDays = 5; // Annahme: 5-Tage-Arbeitswoche
+  const totalWeekHours = 24 * 7;
+  const workWeekHours = workHours * workDays;
+  const nonWorkHours = totalWeekHours - workWeekHours;
+
+  // PAL für Nicht-Arbeitszeit (angenommen als 1.4 für moderate Aktivität)
+  const nonWorkPAL = 1.2;
+
+  return (workPAL * workWeekHours + nonWorkPAL * nonWorkHours) / totalWeekHours;
+};
+
 
 const calculate = () => {
   if (!height.value || !weight.value || !age.value) {
-    alert("Höhe, Gewicht und Alter sind Pflichtfelder");
+    alert("Alle Felder müssen ausgefüllt sein");
     return;
   }
 
-  store.bodyData = {
-    height: height.value,
-    weight: weight.value,
-    age: age.value,
-    gender: gender.value,
-    bodyFatLevel: bodyFatLevel.value,
-    weeklyExerciseHours: weeklyExerciseHours.value,
-    exerciseIntensity: exerciseIntensity.value,
-    stressLevel: stressLevel.value,
-    sleepHours: sleepHours.value,
-    workHours: workHours.value,
-    workIntensity: workIntensity.value,
-    dietLevel: dietLevel.value,
-    diet: diet.value,
-  };
+  const workPAL = parseFloat(workIntensity.value);
+  const weightedPAL = calculateWeightedPAL(parseFloat(workHours.value), workPAL);
+  const bmr = calculateBMR(height.value, weight.value, age.value, gender.value);
 
-  const totalCalories = calculateCalories(
-    height.value,
-    weight.value,
-    age.value,
-    gender.value,
-    bodyFatLevel.value,
-    weeklyExerciseHours.value,
-    exerciseIntensity.value,
-    stressLevel.value,
-    sleepHours.value,
-    workHours.value,
-    workIntensity.value
-  );
 
-  const suggesedCalories = calculateDietCalories(totalCalories, dietLevel.value);
-  kcalSuggested.value = Math.round(suggesedCalories);
-  const nutrientSuggestedData = calculateNutrientDistribution(suggesedCalories, diet.value);
+  let dailyKcal = weightedPAL !== 0 ? Math.round(bmr * weightedPAL) : Math.round(bmr);
+
+  // Anwendung des Diätziels
+  const dietPercentage = customDietLevel.value !== '' ? parseFloat(customDietLevel.value) : dietLevel.value;
+  dailyKcal = Math.round(dailyKcal * (1 + dietPercentage / 100));
+
+  kcalPerDay.value = dailyKcal;
+
+  const nutrientSuggestedData = calculateNutrientDistribution(dailyKcal, dietType.value);
   nutrientSuggested.value = nutrientSuggestedData;
-  store.kcalSuggested = kcalSuggested.value;
-  store.nutrientSuggested = nutrientSuggestedData;
 
   dialog.value = true;
 };
+
+
+const calculateBMR = (height, weight, age, gender) => {
+  // Mifflin-St Jeor Formel für den Grundumsatz (BMR)
+  if (gender === "male") {
+    return 10 * weight + 6.25 * height - 5 * age + 5;
+  } else {
+    return 10 * weight + 6.25 * height - 5 * age - 161;
+  }
+};
+
+const calculateNutrientDistribution = (kcal, dietType) => {
+  let nutrientDistribution = {};
+
+  // low carb
+  if (dietType === "lowCarb") {
+    nutrientDistribution.carbs = (0.1 * kcal) / 4;
+    nutrientDistribution.protein = (0.2 * kcal) / 4;
+    nutrientDistribution.fat = (0.7 * kcal) / 9;
+  }
+  // balanced
+  else if (dietType === "balanced") {
+    nutrientDistribution.carbs = (0.4 * kcal) / 4;
+    nutrientDistribution.protein = (0.3 * kcal) / 4;
+    nutrientDistribution.fat = (0.3 * kcal) / 9;
+  }
+  // low fat
+  else if (dietType === "lowFat") {
+    nutrientDistribution.carbs = (0.6 * kcal) / 4;
+    nutrientDistribution.protein = (0.2 * kcal) / 4;
+    nutrientDistribution.fat = (0.2 * kcal) / 9;
+  } else {
+    return "Invalid nutrition type.";
+  }
+
+  nutrientDistribution.carbs = Math.round(nutrientDistribution.carbs);
+  nutrientDistribution.protein = Math.round(nutrientDistribution.protein);
+  nutrientDistribution.fat = Math.round(nutrientDistribution.fat);
+
+  return nutrientDistribution;
+}
 
 const updateBodyData = () => {
   store.bodyData = {
@@ -208,25 +206,24 @@ const updateBodyData = () => {
     weight: weight.value,
     age: age.value,
     gender: gender.value,
-    bodyFatLevel: bodyFatLevel.value,
-    weeklyExerciseHours: weeklyExerciseHours.value,
-    exerciseIntensity: exerciseIntensity.value,
-    stressLevel: stressLevel.value,
-    sleepHours: sleepHours.value,
     workHours: workHours.value,
     workIntensity: workIntensity.value,
+    manualPAL: manualPAL.value,
     dietLevel: dietLevel.value,
-    diet: diet.value,
+    dietType: dietType.value,
+    customDietLevel: customDietLevel.value,
   };
 
-  store.kcalSuggested = kcalSuggested.value;
+  console.log('nutrientSuggested.value', nutrientSuggested.value);
 
+  store.kcalSuggested = kcalPerDay.value;
+  store.nutrientSuggested = nutrientSuggested.value;
   store.updateBodyData();
+
   dialog.value = false;
 
   router.push('/');
 };
-
 </script>
 
 <style scoped></style>

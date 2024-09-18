@@ -26,13 +26,6 @@
     </v-row>
   </v-container>
 
-  <!-- WeightSetpoint  -->
-  <v-container>
-    <v-row>
-      <WeightSetpoint />
-    </v-row>
-  </v-container>
-
   <!-- Archive Button  -->
   <v-container>
     <v-row justify="center">

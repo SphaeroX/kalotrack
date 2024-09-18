@@ -1,6 +1,6 @@
 <template>
     <v-container class="kcalText">
-        <v-text-field :label="label" v-model="inputValue" @blur="handleEnter" type="number"></v-text-field>
+        <v-text-field :label="label" v-model="inputValue" @blur="handleEnter" @keydown.enter="handleEnter" type="number"></v-text-field>
     </v-container>
 </template>
 
