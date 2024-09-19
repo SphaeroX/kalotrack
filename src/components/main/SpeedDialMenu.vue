@@ -98,6 +98,7 @@ const chatMessages = ref(["Hier kann man unter anderem dann Fragen zur seiner Er
 const inputFieldRef = ref(null);
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const fileInput = ref(null);
+const mediaStream = ref(null);
 
 // Function to get random example text
 const exampleInput = () => {
@@ -190,19 +191,24 @@ const sendMessage = () => {
     }
 };
 
-// Start Recording Funktion
 const startRecording = async () => {
     recordingDialog.value = true;
     audioChunks.value = [];
 
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder.value = new MediaRecorder(stream);
+        mediaStream.value = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder.value = new MediaRecorder(mediaStream.value);
 
         mediaRecorder.value.ondataavailable = (event) => {
             if (event.data.size > 0) {
                 audioChunks.value.push(event.data);
             }
+        };
+
+        mediaRecorder.value.onstop = () => {
+            // Stop all audio tracks to release the microphone
+            mediaStream.value.getTracks().forEach(track => track.stop());
+            mediaStream.value = null;  // Setze den Stream auf null
         };
 
         mediaRecorder.value.start();
@@ -212,23 +218,25 @@ const startRecording = async () => {
     }
 };
 
-// Aufnahme stoppen und verwerfen
 const discardVoiceInput = () => {
     if (mediaRecorder.value) {
         mediaRecorder.value.stop();
         mediaRecorder.value = null;
     }
+    if (mediaStream.value) {
+        // Stop the stream manually if not already stopped
+        mediaStream.value.getTracks().forEach(track => track.stop());
+        mediaStream.value = null;  // Setze den Stream auf null
+    }
     audioChunks.value = [];
     recordingDialog.value = false;
 };
 
-// Aufnahme stoppen und an Backend senden
 const submitVoiceInput = async () => {
     if (mediaRecorder.value) {
         mediaRecorder.value.stop();
         recordingDialog.value = false;
         overlay.value = true;
-
 
         mediaRecorder.value.onstop = async () => {
             const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' });
@@ -240,14 +248,20 @@ const submitVoiceInput = async () => {
                 store.addItems(result);
                 audioChunks.value = [];
                 overlay.value = false;
-
             } catch (error) {
                 alert('Fehler beim Senden der Aufnahme.');
                 console.error('Fehler beim Senden der Aufnahme:', error);
             }
+
+            if (mediaStream.value) {
+                // Ensure the media stream is stopped after sending
+                mediaStream.value.getTracks().forEach(track => track.stop());
+                mediaStream.value = null;  // Setze den Stream auf null
+            }
         };
     }
 };
+
 
 // Function to open image picker
 const openImagePicker = () => {
