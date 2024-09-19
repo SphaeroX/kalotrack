@@ -60,7 +60,7 @@ async function imageToItems(req, res) {
 
     const imageUrl = `data:${mimeType};base64,${base64Image}`;
 
-    const prompt = prompts.imageToText();
+    const promptInput = prompts.imageToText();
 
     const response = await openai.chat.completions.create({
       model: global.chatGptModel,
@@ -70,7 +70,7 @@ async function imageToItems(req, res) {
           content: [
             {
               type: "text",
-              text: prompt,
+              text: promptInput,
             },
           ],
         },

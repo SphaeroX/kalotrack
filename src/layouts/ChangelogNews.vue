@@ -4,8 +4,7 @@
             <v-card-text>
                 <h3>Update {{ latestNews }}</h3>
                 <v-divider class="pb-4"></v-divider>
-                <p class="pb-3">Der Kalorienrechner wurde aktualisiert, ggf. muss das Ziel neu ausgewählt werden und die Arbeit.</p>
-                <p class="pb-3">Berechnet wird nun nach dem PAL-Wert.</p>
+                <p class="pb-3">Fehler beim Bilder Upload behoben.</p>
             </v-card-text>
             <v-card-actions>
                 <v-btn color="primary" block @click="closeDialog">Schließen</v-btn>
@@ -18,7 +17,7 @@
 import { ref, onMounted } from 'vue';
 
 const dialog = ref(false);
-const latestNews = ref("20240918"); // Das aktuelle Datum als News-Version
+const latestNews = ref("20240919"); // Das aktuelle Datum als News-Version
 
 // Funktion zum Überprüfen von Nachrichten
 const checkNews = () => {
