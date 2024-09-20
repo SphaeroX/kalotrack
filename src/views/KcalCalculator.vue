@@ -136,15 +136,26 @@ const calculateWeightedPAL = (workHours, workPAL) => {
 
 
 const calculate = () => {
+  // Sicherstellen, dass alle Felder ausgefüllt sind
   if (!height.value || !weight.value || !age.value) {
     alert("Alle Felder müssen ausgefüllt sein");
     return;
   }
 
+  // Konvertiere height, weight, und age zu Float
+  const heightValue = parseFloat(height.value);
+  const weightValue = parseFloat(weight.value);
+  const ageValue = parseFloat(age.value);
+
+  // Überprüfen, ob die Werte gültige Zahlen sind
+  if (isNaN(heightValue) || isNaN(weightValue) || isNaN(ageValue)) {
+    alert("Bitte geben Sie gültige numerische Werte für Größe, Gewicht und Alter ein.");
+    return;
+  }
+
   const workPAL = parseFloat(workIntensity.value);
   const weightedPAL = calculateWeightedPAL(parseFloat(workHours.value), workPAL);
-  const bmr = calculateBMR(height.value, weight.value, age.value, gender.value);
-
+  const bmr = calculateBMR(heightValue, weightValue, ageValue, gender.value);
 
   let dailyKcal = weightedPAL !== 0 ? Math.round(bmr * weightedPAL) : Math.round(bmr);
 
@@ -159,6 +170,7 @@ const calculate = () => {
 
   dialog.value = true;
 };
+
 
 
 const calculateBMR = (height, weight, age, gender) => {
