@@ -13,7 +13,7 @@ class Prompts {
         - bei den Mengenangaben wie groß diese Menge sein könnte, als Beispiel bei einer Hand voll überlegst du welche Menge in eine Hand passt.
         - wie sich die Kalorien zusammensetzen.
         - was ich mit meinem Text genau in meine Kalorienzähler App eintragen möchte.
-        - wenn bei zB bei Nudeln nicht explizit ungekocht dran steht oder es sich um Gerichte handelt, nimm gekochte Nudeln da diese mehr wiegen wegen dem Wasser und schreibe es auch so in den Name.
+        - wenn bei zB bei Reis, Quinoa, Linsen, Couscous, Gerste, Bulgur, Nudeln nicht explizit ungekocht dran steht oder es sich um Gerichte handelt, nimm die gekochte Variante da diese mehr wiegen wegen dem Wasser und schreibe es auch so in den Name.
 
         hier sind Beispiele:
         - "Ein Glas Wasser" -> [{name: "Wasser", amount: 1, unit: "Glas", kcal: 0, protein: 0, carbohydrates: 0, fat: 0, healthyRating: 2}]

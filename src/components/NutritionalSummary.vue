@@ -19,10 +19,14 @@ import { useMainStore } from '@/stores/mainStore';
 
 const store = useMainStore();
 
-const carbsConsumed = computed(() => store.carbsConsumed);
-const proteinConsumed = computed(() => store.proteinConsumed);
-const fatConsumed = computed(() => store.fatConsumed);
-const nutrientGoals = computed(() => store.nutrientSuggested);
+const carbsConsumed = computed(() => Math.round(store.carbsConsumed));
+const proteinConsumed = computed(() => Math.round(store.proteinConsumed));
+const fatConsumed = computed(() => Math.round(store.fatConsumed));
+const nutrientGoals = computed(() => ({
+    carbs: Math.round(store.nutrientSuggested.carbs),
+    protein: Math.round(store.nutrientSuggested.protein),
+    fat: Math.round(store.nutrientSuggested.fat)
+}));
 </script>
 
 <style scoped>
